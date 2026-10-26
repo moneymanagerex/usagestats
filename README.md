@@ -22,4 +22,7 @@ journalctl -u usagestats -n 20 --no-pager
 # 5) 本地直连测试（先不经过 Nginx）
 curl -s http://127.0.0.1:8000/healthz
 # {"ok":true}
+
+# 6)
+curl -s http://usagestats.moneymanagerex.org/healthz
 ```
