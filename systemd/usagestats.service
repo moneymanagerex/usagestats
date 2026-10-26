@@ -1,0 +1,20 @@
+[Unit]
+Description=UsageStats API (Amplitude proxy)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/home/public_html/usagestats
+Environment="AMPLITUDE_API_KEY=请替换为轮换后的新key"
+Environment="SAMPLE_RATE=20"
+Environment="UPSTREAM_TIMEOUT=5"
+Environment="V1_FORWARD=true"
+ExecStart=/home/public_html/usagestats/venv/bin/uvicorn main:app \
+    --host 127.0.0.1 --port 8000 --workers 2 --no-access-log
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
