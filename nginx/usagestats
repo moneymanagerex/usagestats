@@ -1,0 +1,45 @@
+server {
+    listen 80;
+    server_name usagestats.moneymanagerex.org;
+    root /home/public_html/usagestats;
+
+    # v1 / v2 精确匹配 → Python
+    location = /API/main_stats_v1.php {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 10s;
+    }
+    location = /API/main_stats_v2.php {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 10s;
+        client_max_body_size 1m;
+    }
+    location = /healthz { proxy_pass http://127.0.0.1:8000; }
+
+    # 回滚后路：任何其他 .php 仍走 PHP-FPM（观察期保留，清理时删除）
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~* \.(css|js|jpg|jpeg|png|gif|ico|svg)$ {
+        expires max; log_not_found off; access_log off;
+    }
+    location ~ /\.ht { deny all; }
+
+    error_log /var/log/nginx/usagestats.error.log;
+    access_log /var/log/nginx/usagestats.access.log;
+}
