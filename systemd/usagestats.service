@@ -12,7 +12,7 @@ Environment="SAMPLE_RATE=20"
 Environment="UPSTREAM_TIMEOUT=5"
 Environment="V1_FORWARD=true"
 ExecStart=/home/public_html/usagestats/venv/bin/uvicorn main:app \
-    --host 127.0.0.1 --port 8000 --workers 2 --no-access-log
+    --host 127.0.0.1 --port 8000 --workers 1 --no-access-log
 Restart=always
 RestartSec=3
 
